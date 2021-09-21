@@ -23,5 +23,12 @@ namespace Common.Enums
         {
             None = 0
         }
+        /// <summary>
+        /// User Roles
+        /// </summary>
+        public enum UserRole
+        {
+            User = 0
+        }
     }
 }

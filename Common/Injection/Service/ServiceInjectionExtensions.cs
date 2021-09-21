@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Common.ServiceInjection
+namespace Common.Injection.Service
 {
     public static class ServiceInjectionExtensions
     {
