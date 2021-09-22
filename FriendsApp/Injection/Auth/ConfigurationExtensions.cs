@@ -16,7 +16,7 @@ namespace FriendsApi.Injection.Auth
                 options.TokenValidationParameters.RequireExpirationTime = false;
                 options.Authority = apiHost;
                 options.RequireHttpsMetadata = false;
-                options.Audience = "FriendsApi";
+                options.Audience = "Api";
                 options.BackchannelHttpHandler = new HttpClientHandler
                 {
                     UseProxy = false

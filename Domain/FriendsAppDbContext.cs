@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,5 +12,18 @@ namespace Domain
     {
         public FriendsAppDbContext(DbContextOptions<FriendsAppDbContext> options) : base(options)
         { }
+        public DbSet<User> Users { get; set; }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<User>().ToTable("Users");
+            var login = builder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins");
+            login.HasKey("LoginProvider", "ProviderKey");
+            var token = builder.Entity<IdentityUserToken<int>>().ToTable("UserTokens");
+            token.HasKey("UserId", "LoginProvider", "Name");
+            var role = builder.Entity<IdentityUserRole<int>>().ToTable("UserRoles");
+            role.HasKey("UserId", "RoleId");
+            builder.Entity<UserPermission>().ToTable("UserPermission");
+
+        }
     }
 }

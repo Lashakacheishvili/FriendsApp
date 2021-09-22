@@ -1,4 +1,5 @@
 using Common.Helpers;
+using Common.Injection.Service;
 using Domain;
 using Domain.Extensions;
 using FriendsApi.Injection.Auth;
@@ -33,6 +34,7 @@ namespace FriendsApp
             #region Swagger Docs
             services.AddSwaggerDocumentation(apiHost);
             #endregion
+            services.AddJobariaService();
             services.AddConfigure();
         }
 

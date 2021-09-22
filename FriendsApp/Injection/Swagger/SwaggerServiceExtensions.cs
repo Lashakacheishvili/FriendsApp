@@ -66,6 +66,7 @@ namespace FriendsApi.Swagger
                        new string[] { "FriendsApi" }
                     }
                 });
+                c.CustomSchemaIds((type) => type.Name);
                 c.AddServer(new OpenApiServer { Url = apiHost });
             });
             services.ConfigureSwaggerGen(options =>
@@ -89,8 +90,7 @@ namespace FriendsApi.Swagger
                 c.RoutePrefix = string.Empty;
                 c.DocumentTitle = "Friends API";
                 c.DocExpansion(DocExpansion.None);
-
-                c.OAuthClientId("FriendsApi");
+                c.OAuthClientId("Api");
                 c.OAuthClientSecret("5Aue2ks34fj");
                 c.OAuthScopeSeparator(" ");
                 c.OAuthUseBasicAuthenticationWithAccessCodeGrant();

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FriendsApi</name>
+    </assembly>
+    <members>
+        <member name="M:FriendsApi.Controllers.UserController.GetUser">
+            <summary>
+            User info
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

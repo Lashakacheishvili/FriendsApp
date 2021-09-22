@@ -36,6 +36,7 @@ namespace FriendsApi.Injection.DB
           .AddInMemoryPersistedGrants()
           .AddInMemoryApiResources(ClientConfiguration.GetApiResources())
           .AddInMemoryClients(ClientConfiguration.GetClients())
+          .AddInMemoryApiScopes(ClientConfiguration.GetApiScopes())
           .AddResourceOwnerValidator<AppResourceOwnerPasswordValidator>();
             return services;
         }
