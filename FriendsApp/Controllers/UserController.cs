@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FriendsApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.ServiceInterfaces;
+using ServiceModels;
 using ServiceModels.Models.User;
 using System;
 using System.Collections.Generic;
@@ -19,16 +21,62 @@ namespace FriendsApi.Controllers
         {
             _userService = userService;
         }
+        #region Gets Method
         /// <summary>
         /// User info
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpGet("User")]
+        [HttpGet("user")]
         [Authorize(Policy = "FriendsApi")]
-        public async Task<UserItemModel> GetUser()
+        public async Task<UserItemModel> GetUser(UserRequestModel request)
         {
-            return await _userService.GetUser(new ServiceModels.Models.User.UserRequestModel { Id=UserId });
+            request.Id = (request.Id.HasValue ? request.Id : UserId);
+            return await _userService.GetUser(request);
         }
+        #endregion
+        #region Posts Method
+        /// <summary>
+        /// Insert User
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("add_user")]
+        [AllowAnonymous]
+        public async Task<BaseResponseModel> AddUser([FromBody] CreateUserApiModel request)
+        {
+            return await _userService.InsertUser(new CreateUserModel {  SiteUrl=request.SiteUrl, UserName=request.UserName, PasswordHash=request.Password });
+        }
+        #endregion
+        #region Put Method
+        /// <summary>
+        /// Update User
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPut("update_user")]
+        [Authorize(Policy = "FriendsApi")]
+        public async Task<BaseResponseModel> UpdateUser([FromBody] UserItemModel request)
+        {
+            if (!UserId.HasValue)
+                return new BaseResponseModel();
+            request.Id = UserId.Value;
+            return await _userService.UpdateUser(request);
+        }
+        #endregion
+        #region Delete Method
+        /// <summary>
+        /// Delete Account
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("delete_user")]
+        [Authorize(Policy = "FriendsApi")]
+        public async Task<BaseResponseModel> DeleteUser()
+        {
+            if (UserId.HasValue)
+                return await _userService.DeleteUser(UserId.Value);
+            return new BaseResponseModel();
+        }
+        #endregion
     }
 }

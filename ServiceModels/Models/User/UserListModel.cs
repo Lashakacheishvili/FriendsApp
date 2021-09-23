@@ -13,7 +13,7 @@ namespace ServiceModels.Models.User
     {
         public int Id { get; set; }
         public string UserName { get; set; }
-        public string URL { get; set; }
+        public string SiteUrl { get; set; }
     }
     public class UserRequestModel
     {

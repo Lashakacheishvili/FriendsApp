@@ -4,11 +4,31 @@
         <name>FriendsApi</name>
     </assembly>
     <members>
-        <member name="M:FriendsApi.Controllers.UserController.GetUser">
+        <member name="M:FriendsApi.Controllers.UserController.GetUser(ServiceModels.Models.User.UserRequestModel)">
             <summary>
             User info
             </summary>
             <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FriendsApi.Controllers.UserController.AddUser(FriendsApi.Models.CreateUserApiModel)">
+            <summary>
+            Insert User
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FriendsApi.Controllers.UserController.UpdateUser(ServiceModels.Models.User.UserItemModel)">
+            <summary>
+            Update User
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FriendsApi.Controllers.UserController.DeleteUser">
+            <summary>
+            Delete Account
+            </summary>
             <returns></returns>
         </member>
     </members>

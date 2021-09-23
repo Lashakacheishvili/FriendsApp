@@ -3,17 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendsApi", "FriendsApp\FriendsApi.csproj", "{5BA6E162-7510-405D-9BAD-91000913FD7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendsApi", "FriendsApp\FriendsApi.csproj", "{5BA6E162-7510-405D-9BAD-91000913FD7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{97E547F4-5F46-405A-B9ED-2E89D355AC80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{97E547F4-5F46-405A-B9ED-2E89D355AC80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{2A5FEB61-467B-46AC-A985-35644C3459FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{2A5FEB61-467B-46AC-A985-35644C3459FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{1D1B9894-D260-47BC-A9F8-1C407F305532}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{1D1B9894-D260-47BC-A9F8-1C407F305532}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModels", "ServiceModels\ServiceModels.csproj", "{94D98877-12CD-4474-9D81-687CD9A3B5B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceModels", "ServiceModels\ServiceModels.csproj", "{94D98877-12CD-4474-9D81-687CD9A3B5B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendsWeb", "FriendsWeb\FriendsWeb.csproj", "{0E8D0267-142E-41D2-9AFD-3BD782476BA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendsWeb", "FriendsWeb\FriendsWeb.csproj", "{0E8D0267-142E-41D2-9AFD-3BD782476BA3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9061BFCC-742D-402B-82A4-5558246B1517}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

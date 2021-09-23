@@ -22,7 +22,7 @@ namespace FriendsApi.OAuth
         }
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            var user = await _userManager.Users.Include(s => s.Roles).FirstOrDefaultAsync(s => s.UserName == context.UserName);
+            var user = await _userManager.Users.Include(s => s.Roles).FirstOrDefaultAsync(s => s.UserName == context.UserName && !s.DeleteDate.HasValue);
             if (user == null)
             {
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
