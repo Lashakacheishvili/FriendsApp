@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Common.Enums.Enums;
 using static IdentityModel.OidcConstants;
 
 namespace FriendsApi.OAuth
@@ -22,7 +23,7 @@ namespace FriendsApi.OAuth
         }
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            var user = await _userManager.Users.Include(s => s.Roles).FirstOrDefaultAsync(s => s.UserName == context.UserName && !s.DeleteDate.HasValue);
+            var user = await _userManager.Users.Include(s => s.Roles).FirstOrDefaultAsync(s => s.UserName == context.UserName && !s.DeleteDate.HasValue && s.UserStatus== UserStatus.Active);
             if (user == null)
             {
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest);
