@@ -42,10 +42,18 @@ namespace FriendsApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("add_user")]
-        [AllowAnonymous]
+        [Authorize(Policy = "FriendsApi")]
         public async Task<BaseResponseModel> AddUser([FromBody] CreateUserApiModel request)
         {
-            return await _userService.InsertUser(new CreateUserModel {  SiteUrl=request.SiteUrl, UserName=request.UserName, PasswordHash=request.Password });
+            return await _userService.InsertUser(new CreateUserModel { SiteUrl = request.SiteUrl, UserName = request.UserName, PasswordHash = request.Password });
+        }
+        [HttpPost("add-friend/{id}")]
+        [Authorize(Policy = "FriendsApi")]
+        public async Task<BaseResponseModel> AddFriend(int id)
+        {
+            if (UserId.GetValueOrDefault() > 0)
+                return await _userService.AddFriend(new AddFriendRequestModel { UserId = UserId.Value, ReceiverUserId = id });
+            return new BaseResponseModel();
         }
         #endregion
         #region Put Method
@@ -58,7 +66,7 @@ namespace FriendsApi.Controllers
         [Authorize(Policy = "FriendsApi")]
         public async Task<BaseResponseModel> UpdateUser([FromBody] UserItemModel request)
         {
-            if (!UserId.HasValue)
+            if (UserId.GetValueOrDefault() < 1)
                 return new BaseResponseModel();
             request.Id = UserId.Value;
             return await _userService.UpdateUser(request);
@@ -73,7 +81,7 @@ namespace FriendsApi.Controllers
         [Authorize(Policy = "FriendsApi")]
         public async Task<BaseResponseModel> DeleteUser()
         {
-            if (UserId.HasValue)
+            if (UserId.GetValueOrDefault() > 0)
                 return await _userService.DeleteUser(UserId.Value);
             return new BaseResponseModel();
         }

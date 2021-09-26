@@ -43,5 +43,11 @@ namespace Service.ServiceImplementations
             var gen = new CRUDGenerator<int?, Domain.Models.User, BaseResponseModel>(null, _context.Database.GetDbConnection(), null);
             return await gen.GenerateSoftDelete(userId);
         }
+        //Add friend
+        public async Task<BaseResponseModel> AddFriend(AddFriendRequestModel request)
+        {
+            var gen = new CRUDGenerator<AddFriendRequestModel, Domain.Models.Friend, BaseResponseModel>(request, _context.Database.GetDbConnection(), null);
+            return await gen.GenerateInsert();
+        }
     }
 }

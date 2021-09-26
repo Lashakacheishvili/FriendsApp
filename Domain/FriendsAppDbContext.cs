@@ -13,6 +13,7 @@ namespace Domain
         public FriendsAppDbContext(DbContextOptions<FriendsAppDbContext> options) : base(options)
         { }
         public DbSet<User> Users { get; set; }
+        public DbSet<Friend> Friends { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<User>().ToTable("Users");

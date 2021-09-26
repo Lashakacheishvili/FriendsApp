@@ -10,5 +10,6 @@ namespace Service.ServiceInterfaces
         Task<BaseResponseModel> InsertUser(CreateUserModel model);
         Task<BaseResponseModel> UpdateUser(UserItemModel model);
         Task<BaseResponseModel> DeleteUser(int userId);
+        Task<BaseResponseModel> AddFriend(AddFriendRequestModel request);
     }
 }
