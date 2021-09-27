@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http;
+using Common.Resources;
 using System.Threading.Tasks;
+using Common.Helpers;
 
 namespace FriendsApi.Controllers
 {
@@ -25,25 +27,19 @@ namespace FriendsApi.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return new LoginResponseModel { UserMessage = "ტელეფონი ან კოდი არ არის შევსებული" };
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return new LoginResponseModel { UserMessage = "ტელეფონი ან კოდი არ არის შევსებული" };
+                return new LoginResponseModel { UserMessage = nameof(RsStrings.InvalidUser).GetRsValidatorTranslation() };
             }
             var client = new HttpClient();
             var disco = await client.GetDiscoveryDocumentAsync(_configuration.GetValue<string>("APIHost").TrimEnd('/') + "/");
             if (disco.IsError)
             {
-                //Console.WriteLine(disco.Error);
-                return new LoginResponseModel { UserMessage = "ტელეფონი ან კოდი არ არის შევსებული" };
+                return new LoginResponseModel { UserMessage = nameof(RsStrings.InvalidUser).GetRsValidatorTranslation() };
             }
             var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest { Address = disco.TokenEndpoint, UserName = request.UserName, Password = request.Password, ClientId ="Api" });
 
             if (tokenResponse.IsError)
             {
-                return new LoginResponseModel { UserMessage = "ტელეფონი ან კოდი არ არის შევსებული" };
+                return new LoginResponseModel { UserMessage = nameof(RsStrings.InvalidUser).GetRsValidatorTranslation() };
             }
             return new LoginResponseModel { Success=true, AccessToken = tokenResponse.AccessToken };
         }
