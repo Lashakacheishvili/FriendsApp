@@ -29,7 +29,7 @@ namespace FriendsApi.Controllers
         /// <returns></returns>
         [HttpGet("user")]
         [Authorize(Policy = "FriendsApi")]
-        public async Task<UserItemModel> GetUser(UserRequestModel request)
+        public async Task<UserItemModel> GetUser([FromQuery]UserRequestModel request)
         {
             request.Id = (request.Id.HasValue ? request.Id : UserId);
             return await _userService.GetUser(request);
