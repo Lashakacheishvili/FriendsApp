@@ -16,7 +16,7 @@ namespace Service.Helper
         private readonly TInserData _dataModel;
         private readonly IDbConnection _connection;
         private readonly string _commandText;
-        private readonly string _dataInsert = $@"INSERT INTO  ""{typeof(TDbModel).Name + "s"}""({string.Join(",", typeof(TInserData).GetProperties().Select(s => @"""" + s.Name + @""""))}) VALUES ({string.Join(",", typeof(TInserData).GetProperties().Select(s => "@" + s.Name))})";
+        private readonly string _dataInsert = $@"INSERT INTO  ""{typeof(TDbModel).Name + "s"}""({string.Join(",", typeof(TInserData).GetProperties().Select(s => @"""" + s.Name + @""""))},""CreateDate"") VALUES ({string.Join(",", typeof(TInserData).GetProperties().Select(s => "@" + s.Name))},now())";
         private readonly string _dataUpdate = $@"UPDATE   ""{typeof(TDbModel).Name + "s"}"" SET ";
         private readonly string _dataDelete = $@"DELETE FROM   ""{typeof(TDbModel).Name + "s"}"" WHERE  ";
         public CRUDGenerator(TInserData dataModel, IDbConnection connection, string commandText)
@@ -41,7 +41,7 @@ namespace Service.Helper
         {
             var names = typeof(TInserData).GetProperties().Select(s => s.Name);
             IEnumerable<string> enumerable = names as string[] ?? names.ToArray();
-            var updateCommand = _dataUpdate + string.Join(",", enumerable.Where(s => s != "Id").Select(s => @"""" + s + @$"""=@{s}")) + " WHERE " + enumerable.Where(s => s == "Id").Select(s => @"""" + s + @$"""=@{s}").FirstOrDefault();
+            var updateCommand = _dataUpdate + string.Join(",", enumerable.Where(s => s != "Id").Select(s => @"""" + s + @$"""=@{s}"))+ @"""UpdateDate""=now()" + " WHERE " + enumerable.Where(s => s == "Id").Select(s => @"""" + s + @$"""=@{s}").FirstOrDefault();
             var cmd = new CommandDefinition(updateCommand, _dataModel, commandType: CommandType.Text);
             var dataResult = await _connection.ExecuteAsync(cmd);
             return new BaseResponseModel

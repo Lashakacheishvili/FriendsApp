@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Service.Helper;
 using Service.ServiceInterfaces;
+using ServiceModels;
 using ServiceModels.Models.Animal;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,10 +17,10 @@ namespace Service.ServiceImplementations
             _context = context;
         }
         //Animals
-        public async Task<AnimalResponseModel> GetUser(AnimalRequestModel request)
+        public async Task<AnimalResponseModel> GetAnimals(AnimalRequestModel request)
         {
-            var command = $@"Select ""Id"" ,""UserName"",""SiteUrl"" from ""Users"" u where ""DeleteDate""  isnull  
-                             {(!string.IsNullOrEmpty(request.Name) ? $@" and u.""UserName"" like N'%{request.Name}%'" : string.Empty)}";
+            var command = $@"Select ""Id"" ,""Name"" from ""Friends"" f where ""DeleteDate""  isnull  
+                             {(!string.IsNullOrEmpty(request.Name) ? $@" and f.""Name"" like N'%{request.Name}%'" : string.Empty)}";
             var gen = new CRUDGenerator<AnimalRequestModel, Domain.Models.User, AnimalItemModel>(request, _context.Database.GetDbConnection(), command);
             var resp = await gen.GenerateSelectAndCount();
             return new AnimalResponseModel
@@ -27,6 +28,24 @@ namespace Service.ServiceImplementations
                 Animals = resp,
                 TotalCount = resp.Count()
             };
+        }
+        //Update Animal
+        public async Task<BaseResponseModel> UpdateUser(CreateEditAnimalModel model)
+        {
+            var gen = new CRUDGenerator<CreateEditAnimalModel, Domain.Models.Animal, BaseResponseModel>(model, _context.Database.GetDbConnection(), null);
+            return await gen.GenerateUpdate();
+        }
+        //Add Animal
+        public async Task<BaseResponseModel> InsertUser(CreateEditAnimalModel model)
+        {
+            var gen = new CRUDGenerator<CreateEditAnimalModel, Domain.Models.Animal, BaseResponseModel>(model, _context.Database.GetDbConnection(), null);
+            return await gen.GenerateInsert();
+        }
+        //Delete Animal
+        public async Task<BaseResponseModel> DeleteUser(int id)
+        {
+            var gen = new CRUDGenerator<int?, Domain.Models.Animal, BaseResponseModel>(null, _context.Database.GetDbConnection(), null);
+            return await gen.GenerateSoftDelete(id);
         }
     }
 }
