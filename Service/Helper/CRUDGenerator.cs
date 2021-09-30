@@ -102,7 +102,7 @@ namespace Service.Helper
                             script.Append(@$"Limit {value}");
                         else if (item.Name.ToLower() == "offset")
                             script.Append(@$" offset {value}");
-                        else
+                        else if(value.ToString() != "0")
                             script.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
                     }
                 }
