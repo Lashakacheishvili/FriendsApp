@@ -10,6 +10,7 @@ namespace Common.Injection.Service
         public static IServiceCollection AddJobariaService(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAnimalService, AnimalService>();
             return services;
         }
     }

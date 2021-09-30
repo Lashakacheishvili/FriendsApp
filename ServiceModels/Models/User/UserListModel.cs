@@ -15,7 +15,7 @@ namespace ServiceModels.Models.User
         public string UserName { get; set; }
         public string SiteUrl { get; set; }
     }
-    public class UserRequestModel
+    public class UserRequestModel: BaseRequestModel
     {
         public int? Id { get; set; }
         public string Name { get; set; }

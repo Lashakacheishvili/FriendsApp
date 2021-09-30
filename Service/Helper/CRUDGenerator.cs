@@ -41,7 +41,7 @@ namespace Service.Helper
         {
             var names = typeof(TInserData).GetProperties().Select(s => s.Name);
             IEnumerable<string> enumerable = names as string[] ?? names.ToArray();
-            var updateCommand = _dataUpdate + string.Join(",", enumerable.Where(s => s != "Id").Select(s => @"""" + s + @$"""=@{s}"))+ @"""UpdateDate""=now()" + " WHERE " + enumerable.Where(s => s == "Id").Select(s => @"""" + s + @$"""=@{s}").FirstOrDefault();
+            var updateCommand = _dataUpdate + string.Join(",", enumerable.Where(s => s != "Id").Select(s => @"""" + s + @$"""=@{s}")) + @"""UpdateDate""=now()" + " WHERE " + enumerable.Where(s => s == "Id").Select(s => @"""" + s + @$"""=@{s}").FirstOrDefault();
             var cmd = new CommandDefinition(updateCommand, _dataModel, commandType: CommandType.Text);
             var dataResult = await _connection.ExecuteAsync(cmd);
             return new BaseResponseModel
@@ -76,12 +76,39 @@ namespace Service.Helper
             };
         }
         //Generate Select and TotalCountQuery
-        public async Task<IEnumerable<TResponse>> GenerateSelectAndCount()
+        public async Task<(IEnumerable<TResponse>, int)> GenerateSelectAndCount()
         {
-            var selectCommand = _commandText;
-            var cmd = new CommandDefinition(selectCommand, _dataModel, commandType: CommandType.Text);
+            var cmd = new CommandDefinition(_commandText + GenerationTakeSctipt(), _dataModel, commandType: CommandType.Text);
             var dataResult = await _connection.QueryAsync<TResponse>(cmd);
-            return dataResult;
+            var totalCount = await _connection.ExecuteScalarAsync<int>(_commandText);
+            return (dataResult, totalCount);
         }
+        #region Private Method
+        string GenerationTakeSctipt()
+        {
+            var script = new StringBuilder();
+            foreach (var item in typeof(TInserData).GetProperties())
+            {
+                var value = item.GetValue(_dataModel, null);
+                if (value != null)
+                {
+                    if (item.Name.ToLower() == "page")
+                        continue;
+                    if ((item.PropertyType == typeof(bool?) || item.PropertyType == typeof(bool)) && (bool)value)
+                        break;
+                    else if ((item.PropertyType == typeof(int?) || item.PropertyType == typeof(int)))
+                    {
+                        if (item.Name.ToLower() == "limit")
+                            script.Append(@$"Limit {value}");
+                        else if (item.Name.ToLower() == "offset")
+                            script.Append(@$" offset {value}");
+                        else
+                            script.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
+                    }
+                }
+            }
+            return script.ToString();
+        }
+        #endregion
     }
 }

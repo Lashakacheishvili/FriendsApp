@@ -4,6 +4,13 @@
         <name>FriendsApi</name>
     </assembly>
     <members>
+        <member name="M:FriendsApi.Controllers.AnimalController.GetAnimals(ServiceModels.Models.Animal.AnimalRequestModel)">
+            <summary>
+            Animals
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
         <member name="M:FriendsApi.Controllers.UserController.GetUser(ServiceModels.Models.User.UserRequestModel)">
             <summary>
             User info

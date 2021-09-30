@@ -14,7 +14,7 @@ namespace ServiceModels.Models.Animal
         public int Id { get; set; }
         public string Name { get; set; }
     }
-    public class AnimalRequestModel
+    public class AnimalRequestModel: BaseRequestModel
     {
         public string Name { get; set; }
     }

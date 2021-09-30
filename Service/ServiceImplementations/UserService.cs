@@ -23,7 +23,7 @@ namespace Service.ServiceImplementations
                              {(!string.IsNullOrEmpty(request.Name)?$@" and u.""UserName"" like N'%{request.Name}%'":string.Empty)}";
             var gen = new CRUDGenerator<UserRequestModel, Domain.Models.User, UserItemModel>(request, _context.Database.GetDbConnection(), command);
             var resp = await gen.GenerateSelectAndCount();
-            return resp?.FirstOrDefault();
+            return resp.Item1?.FirstOrDefault();
         }
         //Update user
         public async Task<BaseResponseModel> UpdateUser(UserItemModel model)
