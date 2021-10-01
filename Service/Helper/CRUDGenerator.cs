@@ -76,15 +76,16 @@ namespace Service.Helper
             };
         }
         //Generate Select and TotalCountQuery
-        public async Task<(IEnumerable<TResponse>, int)> GenerateSelectAndCount()
+        public async Task<(IEnumerable<TResponse>, int)> GenerateSelectAndCount(bool generationWhere=false)
         {
-            var cmd = new CommandDefinition(_commandText + GenerationTakeSctipt(), _dataModel, commandType: CommandType.Text);
+            var command = _commandText + (generationWhere ? GenerateSelectWhere() : string.Empty);
+            var cmd = new CommandDefinition(command + GenerationPaggingSctipt(), _dataModel, commandType: CommandType.Text);
             var dataResult = await _connection.QueryAsync<TResponse>(cmd);
-            var totalCount = await _connection.ExecuteScalarAsync<int>(_commandText);
+            var totalCount = await _connection.ExecuteScalarAsync<int>(command);
             return (dataResult, totalCount);
         }
         #region Private Method
-        string GenerationTakeSctipt()
+        string GenerationPaggingSctipt()
         {
             var script = new StringBuilder();
             foreach (var item in typeof(TInserData).GetProperties())
@@ -94,7 +95,7 @@ namespace Service.Helper
                 {
                     if (item.Name.ToLower() == "page")
                         continue;
-                    if ((item.PropertyType == typeof(bool?) || item.PropertyType == typeof(bool)) && (bool)value)
+                    if (item.Name.ToLower() == "takeall" && (item.PropertyType == typeof(bool?) || item.PropertyType == typeof(bool)) && (bool)value)
                         break;
                     else if ((item.PropertyType == typeof(int?) || item.PropertyType == typeof(int)))
                     {
@@ -102,12 +103,41 @@ namespace Service.Helper
                             script.Append(@$"Limit {value}");
                         else if (item.Name.ToLower() == "offset")
                             script.Append(@$" offset {value}");
-                        else if(value.ToString() != "0")
-                            script.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
                     }
                 }
             }
             return script.ToString();
+        }
+        string GenerateSelectWhere()
+        {
+            string where = "";
+            foreach (var item in typeof(TInserData).GetProperties())
+            {
+                if (item.Name.ToLower() == "page" || item.Name.ToLower() == "limit" || item.Name.ToLower() == "offset" || item.Name.ToLower() == "takeall")
+                    continue;
+                var value = item.GetValue(_dataModel, null);
+                if (value != null && value.ToString() != "0")
+                {
+                    where = " Where ";
+                    if ((item.PropertyType == typeof(int?) || item.PropertyType == typeof(int)))
+                        where += @"""" + item.Name.Replace("_", ".") + @$"""={value}";
+                    else if (item.PropertyType == typeof(string))
+                        where += @"""" + item.Name.Replace("_", ".") + @$"""LIKE N'%@{value}%'";
+                    else if (item.PropertyType == typeof(bool?) || item.PropertyType == typeof(bool))
+                        where += @"""" + item.Name.Replace("_", ".") + @$"""={value}";
+                    else if (item.PropertyType == typeof(decimal?) || item.PropertyType == typeof(bool))
+                        where += @"""" + item.Name.Replace("_", ".") + @$"""={value}";
+                    else if (item.PropertyType == typeof(double?) || item.PropertyType == typeof(bool))
+                        where += @"""" + item.Name.Replace("_", ".") + @$"""={value}";
+                    else if (item.PropertyType.IsEnum)
+                        where = @"""" + item.Name.Replace("_", ".") + @$"""={(int)value}";
+                    else if (item.PropertyType == typeof(IList<int>) || item.PropertyType == typeof(IList<int?>))
+                        where += @$"""" + item.Name.Replace("_", ".") + @"""in(" + string.Join(" , ", (IList<int>)value) + ")";
+                    else if (item.PropertyType == typeof(List<int>) || item.PropertyType == typeof(List<int?>))
+                        where += @$"""" + item.Name.Replace("_", ".") + @"""in(" + string.Join(" , ", (List<int>)value) + ")";
+                }
+            }
+            return where;
         }
         #endregion
     }
