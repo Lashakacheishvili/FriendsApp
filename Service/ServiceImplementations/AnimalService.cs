@@ -32,19 +32,19 @@ namespace Service.ServiceImplementations
         //Update Animal
         public async Task<BaseResponseModel> UpdateUser(CreateEditAnimalModel model)
         {
-            var gen = new CRUDGenerator<CreateEditAnimalModel, Domain.Models.Animal, BaseResponseModel>(model, _context.Database.GetDbConnection(), null);
+            var gen = new CRUDGenerator<CreateEditAnimalModel, Domain.Models.Animal, BaseResponseModel>(model, _context.Database.GetDbConnection());
             return await gen.GenerateUpdate();
         }
         //Add Animal
         public async Task<BaseResponseModel> InsertUser(CreateEditAnimalModel model)
         {
-            var gen = new CRUDGenerator<CreateEditAnimalModel, Domain.Models.Animal, BaseResponseModel>(model, _context.Database.GetDbConnection(), null);
+            var gen = new CRUDGenerator<CreateEditAnimalModel, Domain.Models.Animal, BaseResponseModel>(model, _context.Database.GetDbConnection());
             return await gen.GenerateInsert();
         }
         //Delete Animal
         public async Task<BaseResponseModel> DeleteUser(int id)
         {
-            var gen = new CRUDGenerator<int?, Domain.Models.Animal, BaseResponseModel>(null, _context.Database.GetDbConnection(), null);
+            var gen = new CRUDGenerator<int?, Domain.Models.Animal, BaseResponseModel>(null, _context.Database.GetDbConnection());
             return await gen.GenerateSoftDelete(id);
         }
     }

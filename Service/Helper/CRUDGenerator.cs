@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using ServiceModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace Service.Helper
         private readonly string _dataInsert = $@"INSERT INTO  ""{typeof(TDbModel).Name + "s"}""({string.Join(",", typeof(TInserData).GetProperties().Select(s => @"""" + s.Name + @""""))},""CreateDate"") VALUES ({string.Join(",", typeof(TInserData).GetProperties().Select(s => "@" + s.Name))},now())";
         private readonly string _dataUpdate = $@"UPDATE   ""{typeof(TDbModel).Name + "s"}"" SET ";
         private readonly string _dataDelete = $@"DELETE FROM   ""{typeof(TDbModel).Name + "s"}"" WHERE  ";
-        public CRUDGenerator(TInserData dataModel, IDbConnection connection, string commandText)
+        public CRUDGenerator(TInserData dataModel, IDbConnection connection, string commandText=null)
         {
             _dataModel = dataModel;
             _connection = connection;
@@ -88,13 +89,11 @@ namespace Service.Helper
         string GenerationPaggingSctipt()
         {
             var script = new StringBuilder();
-            foreach (var item in typeof(TInserData).GetProperties())
+            foreach (var item in typeof(TInserData).GetProperties().Where(s=> !Attribute.IsDefined(s, typeof(NotMappedAttribute))))
             {
                 var value = item.GetValue(_dataModel, null);
                 if (value != null)
                 {
-                    if (item.Name.ToLower() == "page")
-                        continue;
                     if (item.Name.ToLower() == "takeall" && (item.PropertyType == typeof(bool?) || item.PropertyType == typeof(bool)) && (bool)value)
                         break;
                     else if ((item.PropertyType == typeof(int?) || item.PropertyType == typeof(int)))

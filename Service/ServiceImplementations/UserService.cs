@@ -28,25 +28,25 @@ namespace Service.ServiceImplementations
         //Update user
         public async Task<BaseResponseModel> UpdateUser(UserItemModel model)
         {
-            var gen = new CRUDGenerator<UserItemModel, Domain.Models.User, BaseResponseModel>(model, _context.Database.GetDbConnection(), null);
+            var gen = new CRUDGenerator<UserItemModel, Domain.Models.User, BaseResponseModel>(model, _context.Database.GetDbConnection());
             return await gen.GenerateUpdate();
         }
         //Add user
         public async Task<BaseResponseModel> InsertUser(CreateUserModel model)
         {
-            var gen = new CRUDGenerator<CreateUserModel, Domain.Models.User, BaseResponseModel>(model, _context.Database.GetDbConnection(), null);
+            var gen = new CRUDGenerator<CreateUserModel, Domain.Models.User, BaseResponseModel>(model, _context.Database.GetDbConnection());
             return await gen.GenerateInsert();
         }
         //Delete user
         public async Task<BaseResponseModel> DeleteUser(int userId)
         {
-            var gen = new CRUDGenerator<int?, Domain.Models.User, BaseResponseModel>(null, _context.Database.GetDbConnection(), null);
+            var gen = new CRUDGenerator<int?, Domain.Models.User, BaseResponseModel>(null, _context.Database.GetDbConnection());
             return await gen.GenerateSoftDelete(userId);
         }
         //Add friend
         public async Task<BaseResponseModel> AddFriend(AddFriendRequestModel request)
         {
-            var gen = new CRUDGenerator<AddFriendRequestModel, Domain.Models.Friend, BaseResponseModel>(request, _context.Database.GetDbConnection(), null);
+            var gen = new CRUDGenerator<AddFriendRequestModel, Domain.Models.Friend, BaseResponseModel>(request, _context.Database.GetDbConnection());
             return await gen.GenerateInsert();
         }
     }

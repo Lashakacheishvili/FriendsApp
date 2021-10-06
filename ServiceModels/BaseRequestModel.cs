@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 namespace ServiceModels
 {
@@ -11,6 +12,7 @@ namespace ServiceModels
         [FromQuery]
         public int Limit { get; set; } = 20;
         [FromQuery]
+        [NotMapped]
         public int Page { get; set; } = 1;
         [BindNever]
         public int OffSet
