@@ -110,7 +110,7 @@ namespace Service.Helper
         string GenerateSelectWhere()
         {
             string where = "";
-            foreach (var item in typeof(TInserData).GetProperties())
+            foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))))
             {
                 if (item.Name.ToLower() == "page" || item.Name.ToLower() == "limit" || item.Name.ToLower() == "offset" || item.Name.ToLower() == "takeall")
                     continue;
