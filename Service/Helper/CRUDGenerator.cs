@@ -1,8 +1,10 @@
-﻿using Dapper;
+﻿using Common.Helpers;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using ServiceModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq;
@@ -20,7 +22,7 @@ namespace Service.Helper
         private readonly string _dataInsert = $@"INSERT INTO  ""{typeof(TDbModel).Name + "s"}""({string.Join(",", typeof(TInserData).GetProperties().Select(s => @"""" + s.Name + @""""))},""CreateDate"") VALUES ({string.Join(",", typeof(TInserData).GetProperties().Select(s => "@" + s.Name))},now())";
         private readonly string _dataUpdate = $@"UPDATE   ""{typeof(TDbModel).Name + "s"}"" SET ";
         private readonly string _dataDelete = $@"DELETE FROM   ""{typeof(TDbModel).Name + "s"}"" WHERE  ";
-        public CRUDGenerator(TInserData dataModel, IDbConnection connection, string commandText=null)
+        public CRUDGenerator(TInserData dataModel, IDbConnection connection, string commandText = null)
         {
             _dataModel = dataModel;
             _connection = connection;
@@ -77,7 +79,7 @@ namespace Service.Helper
             };
         }
         //Generate Select and TotalCountQuery
-        public async Task<(IEnumerable<TResponse>, int)> GenerateSelectAndCount(bool generationWhere=false)
+        public async Task<(IEnumerable<TResponse>, int)> GenerateSelectAndCount(bool generationWhere = false)
         {
             var command = _commandText + (generationWhere ? GenerateSelectWhere() : string.Empty);
             var cmd = new CommandDefinition(command + GenerationPaggingSctipt(), _dataModel, commandType: CommandType.Text);
@@ -89,8 +91,15 @@ namespace Service.Helper
         string GenerationPaggingSctipt()
         {
             var script = new StringBuilder();
-            foreach (var item in typeof(TInserData).GetProperties().Where(s=> !Attribute.IsDefined(s, typeof(NotMappedAttribute))))
+            foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))))
             {
+                //if (item.Name.ToLower() == "myproperty")
+                //{
+                //    var att = item.GetCustomAttributes(typeof(sssss), true).Cast<sssss>().Single();
+                //    shortName = att.TableName;
+                //    name =att.PropertyName;
+                //    joinType = att.JoinType;
+                //}
                 var value = item.GetValue(_dataModel, null);
                 if (value != null)
                 {
