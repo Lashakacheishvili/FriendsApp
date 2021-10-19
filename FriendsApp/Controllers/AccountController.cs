@@ -20,11 +20,11 @@ namespace FriendsApi.Controllers
         {
             _configuration = configuration;
         }
-
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<LoginResponseModel> Login([FromBody] LoginRequestModel request)
         {
+            
             if (!ModelState.IsValid)
             {
                 return new LoginResponseModel { UserMessage = nameof(RsStrings.InvalidUser).GetRsValidatorTranslation() };
