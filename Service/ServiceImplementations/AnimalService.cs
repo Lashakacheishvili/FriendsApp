@@ -21,7 +21,7 @@ namespace Service.ServiceImplementations
         {
             var command = $@"Select ""Id"" ,""Name"" from ""Animals"" f where ""DeleteDate""  isnull  
                              {(!string.IsNullOrEmpty(request.Name) ? $@" and f.""Name"" like N'%{request.Name}%'" : string.Empty)}";
-            var gen = new CRUDGenerator<BaseRequestModel, Domain.Models.User, AnimalItemModel>(request, _context.Database.GetDbConnection(), command);
+            var gen = new CRUDGenerator<AnimalRequestModel, Domain.Models.User, AnimalItemModel>(request, _context.Database.GetDbConnection(), command);
             var resp = await gen.GenerateSelectAndCount();
             return new AnimalResponseModel
             {

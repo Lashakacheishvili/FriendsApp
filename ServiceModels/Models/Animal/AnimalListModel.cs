@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,5 +18,8 @@ namespace ServiceModels.Models.Animal
     public class AnimalRequestModel: BaseRequestModel
     {
         public string Name { get; set; }
+
+        [JoinTableAttribute(JoinType ="LEFT",PropertyName ="UserId",TableName ="Users", TargetPropertyName = "Id")]
+        public string Test { get; set; }
     }
 }

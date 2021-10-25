@@ -1,4 +1,5 @@
-﻿using Common.Helpers;
+﻿using Common.Attributes;
+using Common.Helpers;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using ServiceModels;
@@ -81,25 +82,18 @@ namespace Service.Helper
         //Generate Select and TotalCountQuery
         public async Task<(IEnumerable<TResponse>, int)> GenerateSelectAndCount(bool generationWhere = false)
         {
-            var command = _commandText + (generationWhere ? GenerateSelectWhere() : string.Empty);
-            var cmd = new CommandDefinition(command + GenerationPaggingSctipt(), _dataModel, commandType: CommandType.Text);
+            var command = _commandText + GenerateJoin()+ (generationWhere ? GenerateSelectWhere() : string.Empty);
+            var cmd = new CommandDefinition(command + GenerationPagging(), _dataModel, commandType: CommandType.Text);
             var dataResult = await _connection.QueryAsync<TResponse>(cmd);
             var totalCount = await _connection.ExecuteScalarAsync<int>(command);
             return (dataResult, totalCount);
         }
         #region Private Method
-        string GenerationPaggingSctipt()
+        string GenerationPagging()
         {
-            var script = new StringBuilder();
+            var pagging = new StringBuilder();
             foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))))
             {
-                //if (item.Name.ToLower() == "myproperty")
-                //{
-                //    var att = item.GetCustomAttributes(typeof(sssss), true).Cast<sssss>().Single();
-                //    shortName = att.TableName;
-                //    name =att.PropertyName;
-                //    joinType = att.JoinType;
-                //}
                 var value = item.GetValue(_dataModel, null);
                 if (value != null)
                 {
@@ -108,17 +102,17 @@ namespace Service.Helper
                     else if ((item.PropertyType == typeof(int?) || item.PropertyType == typeof(int)))
                     {
                         if (item.Name.ToLower() == "limit")
-                            script.Append(@$"Limit {value}");
+                            pagging.Append(@$"Limit {value}");
                         else if (item.Name.ToLower() == "offset")
-                            script.Append(@$" offset {value}");
+                            pagging.Append(@$" offset {value}");
                     }
                 }
             }
-            return script.ToString();
+            return pagging.ToString();
         }
         string GenerateSelectWhere()
         {
-            string where = "";
+            var where = new StringBuilder();
             foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))))
             {
                 if (item.Name.ToLower() == "page" || item.Name.ToLower() == "limit" || item.Name.ToLower() == "offset" || item.Name.ToLower() == "takeall")
@@ -126,26 +120,37 @@ namespace Service.Helper
                 var value = item.GetValue(_dataModel, null);
                 if (value != null && value.ToString() != "0")
                 {
-                    where = " Where ";
+                    where.Append(" Where ");
                     if ((item.PropertyType == typeof(int?) || item.PropertyType == typeof(int)))
-                        where += @"""" + item.Name.Replace("_", ".") + @$"""={value}";
+                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
                     else if (item.PropertyType == typeof(string))
-                        where += @"""" + item.Name.Replace("_", ".") + @$"""LIKE N'%@{value}%'";
+                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""LIKE N'%@{value}%'");
                     else if (item.PropertyType == typeof(bool?) || item.PropertyType == typeof(bool))
-                        where += @"""" + item.Name.Replace("_", ".") + @$"""={value}";
+                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
                     else if (item.PropertyType == typeof(decimal?) || item.PropertyType == typeof(bool))
-                        where += @"""" + item.Name.Replace("_", ".") + @$"""={value}";
+                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
                     else if (item.PropertyType == typeof(double?) || item.PropertyType == typeof(bool))
-                        where += @"""" + item.Name.Replace("_", ".") + @$"""={value}";
+                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
                     else if (item.PropertyType.IsEnum)
-                        where = @"""" + item.Name.Replace("_", ".") + @$"""={(int)value}";
+                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={(int)value}");
                     else if (item.PropertyType == typeof(IList<int>) || item.PropertyType == typeof(IList<int?>))
-                        where += @$"""" + item.Name.Replace("_", ".") + @"""in(" + string.Join(" , ", (IList<int>)value) + ")";
+                        where.Append(@$"""" + item.Name.Replace("_", ".") + @"""in(" + string.Join(" , ", (IList<int>)value) + ")");
                     else if (item.PropertyType == typeof(List<int>) || item.PropertyType == typeof(List<int?>))
-                        where += @$"""" + item.Name.Replace("_", ".") + @"""in(" + string.Join(" , ", (List<int>)value) + ")";
+                        where.Append(@$"""" + item.Name.Replace("_", ".") + @"""in(" + string.Join(" , ", (List<int>)value) + ")");
                 }
             }
-            return where;
+            return where.ToString();
+        }
+        string GenerateJoin()
+        {
+            var join = new StringBuilder();
+            foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))
+             && Attribute.IsDefined(s, typeof(JoinTableAttribute))))
+            {
+                var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
+                    join.Append($@"{attValue.JoinType} JOIN ""{ attValue.TableName}"" AS _{attValue.TableName.ToLower()} ON _{attValue.TableName.ToLower()}.""{ attValue.TargetPropertyName}""=""{typeof(TDbModel).Name + "s"}"".""{attValue.PropertyName}""");
+            }
+            return join.ToString();
         }
         #endregion
     }

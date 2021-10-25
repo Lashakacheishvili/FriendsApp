@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace Common.Attributes
 {
-    internal class TableAttribute : Attribute
+    public sealed class JoinTableAttribute : Attribute
     {
-        public string TableName { get; set; }
-        public string PropertyName { get; set; }
-        public string JoinType { get; set; }
-        public TableAttribute()
+        public JoinTableAttribute()
         {
         }
+        public string TableName { get; set; }
+        public string PropertyName { get; set; }
+        public string TargetPropertyName { get; set; }
+        public string JoinType { get; set; }
     }
 }
