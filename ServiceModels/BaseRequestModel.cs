@@ -1,4 +1,5 @@
-﻿using Common.Helpers;
+﻿using Common.Attributes;
+using Common.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
@@ -12,13 +13,17 @@ namespace ServiceModels
     public class BaseRequestModel
     {
         [FromQuery]
+        [NotWhereAttribute]
         public bool TakeAll { get; set; }
         [FromQuery]
+        [NotWhereAttribute]
         public int Limit { get; set; } = 20;
         [FromQuery]
         [NotMapped]
+        [NotWhereAttribute]
         public int Page { get; set; } = 1;
         [BindNever]
+        [NotWhereAttribute]
         public int OffSet
         {
             get

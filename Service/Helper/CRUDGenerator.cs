@@ -113,10 +113,8 @@ namespace Service.Helper
         string GenerateSelectWhere()
         {
             var where = new StringBuilder();
-            foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))))
+            foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute)) && !Attribute.IsDefined(s,typeof(NotWhereAttribute))))
             {
-                if (item.Name.ToLower() == "page" || item.Name.ToLower() == "limit" || item.Name.ToLower() == "offset" || item.Name.ToLower() == "takeall")
-                    continue;
                 var value = item.GetValue(_dataModel, null);
                 if (value != null && value.ToString() != "0")
                 {
@@ -148,7 +146,7 @@ namespace Service.Helper
              && Attribute.IsDefined(s, typeof(JoinTableAttribute))))
             {
                 var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
-                    join.Append($@"{attValue.JoinType} JOIN ""{ attValue.TableName}"" AS _{attValue.TableName.ToLower()} ON _{attValue.TableName.ToLower()}.""{ attValue.TargetPropertyName}""=""{typeof(TDbModel).Name + "s"}"".""{attValue.PropertyName}""");
+                    join.Append($@"{attValue.JoinType} JOIN ""{ attValue.TableName}"" AS _{attValue.PropertyName.ToLower()} ON _{attValue.TableName.ToLower()}.""{ attValue.TargetPropertyName}""=""{typeof(TDbModel).Name + "s"}"".""{attValue.PropertyName}""");
             }
             return join.ToString();
         }
