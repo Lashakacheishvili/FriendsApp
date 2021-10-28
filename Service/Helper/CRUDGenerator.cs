@@ -113,28 +113,34 @@ namespace Service.Helper
         string GenerateSelectWhere()
         {
             var where = new StringBuilder();
+            where.Append(" Where TRUE ");
+            var tableName=$@"""{typeof(TDbModel).Name + "s"}""";
             foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute)) && !Attribute.IsDefined(s,typeof(NotWhereAttribute))))
             {
                 var value = item.GetValue(_dataModel, null);
                 if (value != null && value.ToString() != "0")
                 {
-                    where.Append(" Where ");
+                    if(Attribute.IsDefined(item, typeof(JoinTableAttribute)))
+                    {
+                        var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
+                        tableName= "_"+attValue.PropertyName.ToLower();
+                    }
                     if ((item.PropertyType == typeof(int?) || item.PropertyType == typeof(int)))
-                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
+                        where.Append($@" AND {tableName}.""" + item.Name + @$"""={value}");
                     else if (item.PropertyType == typeof(string))
-                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""LIKE N'%@{value}%'");
+                        where.Append($@" AND {tableName}.""" + item.Name + @$""" LIKE N'%@{value}%'");
                     else if (item.PropertyType == typeof(bool?) || item.PropertyType == typeof(bool))
-                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
+                        where.Append($@" AND {tableName}.""" + item.Name + @$"""={value}");
                     else if (item.PropertyType == typeof(decimal?) || item.PropertyType == typeof(bool))
-                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
+                        where.Append($@" AND {tableName}.""" + item.Name + @$"""={value}");
                     else if (item.PropertyType == typeof(double?) || item.PropertyType == typeof(bool))
-                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={value}");
+                        where.Append($@" AND {tableName}.""" + item.Name + @$"""={value}");
                     else if (item.PropertyType.IsEnum)
-                        where.Append(@"""" + item.Name.Replace("_", ".") + @$"""={(int)value}");
+                        where.Append($@" AND {tableName}.""" + item.Name + @$"""={(int)value}");
                     else if (item.PropertyType == typeof(IList<int>) || item.PropertyType == typeof(IList<int?>))
-                        where.Append(@$"""" + item.Name.Replace("_", ".") + @"""in(" + string.Join(" , ", (IList<int>)value) + ")");
+                        where.Append(@$" AND {tableName}.""" + item.Name + @""" in(" + string.Join(" , ", (IList<int>)value) + ")");
                     else if (item.PropertyType == typeof(List<int>) || item.PropertyType == typeof(List<int?>))
-                        where.Append(@$"""" + item.Name.Replace("_", ".") + @"""in(" + string.Join(" , ", (List<int>)value) + ")");
+                        where.Append(@$" AND {tableName}.""" + item.Name + @""" in(" + string.Join(" , ", (List<int>)value) + ")");
                 }
             }
             return where.ToString();
