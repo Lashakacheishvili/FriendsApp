@@ -133,7 +133,7 @@ namespace Service.Helper
                         where.Append($@" AND {tableName}.""" + item.Name + @$"""={value}");
                     else if (item.PropertyType == typeof(decimal?) || item.PropertyType == typeof(bool))
                         where.Append($@" AND {tableName}.""" + item.Name + @$"""={value}");
-                    else if (item.PropertyType == typeof(double?) || item.PropertyType == typeof(bool))
+                    else if (item.PropertyType == typeof(double?) || item.PropertyType == typeof(double))
                         where.Append($@" AND {tableName}.""" + item.Name + @$"""={value}");
                     else if (item.PropertyType.IsEnum)
                         where.Append($@" AND {tableName}.""" + item.Name + @$"""={(int)value}");
@@ -152,7 +152,7 @@ namespace Service.Helper
              && Attribute.IsDefined(s, typeof(JoinTableAttribute))))
             {
                 var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
-                    join.Append($@"{attValue.JoinType} JOIN ""{ attValue.TableName}"" AS _{attValue.PropertyName.ToLower()} ON _{attValue.TableName.ToLower()}.""{ attValue.TargetPropertyName}""=""{typeof(TDbModel).Name + "s"}"".""{attValue.PropertyName}""");
+                    join.Append($@"{attValue.JoinType} JOIN ""{ attValue.TableName}"" AS _{attValue.PropertyName.ToLower()} ON _{attValue.PropertyName.ToLower()}.""{ attValue.TargetPropertyName}""=""{typeof(TDbModel).Name + "s"}"".""{attValue.PropertyName}""");
             }
             return join.ToString();
         }
