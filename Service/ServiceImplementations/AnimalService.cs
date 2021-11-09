@@ -19,8 +19,7 @@ namespace Service.ServiceImplementations
         //Animals
         public async Task<AnimalResponseModel> GetAnimals(AnimalRequestModel request)
         {
-            var command = $@"Select ""Id"" ,""Name"" from ""Animals"" f ";
-            var gen = new CRUDGenerator<AnimalRequestModel, Domain.Models.User, AnimalItemModel>(request, _context.Database.GetDbConnection(), command);
+            var gen = new CRUDGenerator<AnimalRequestModel, Domain.Models.Animal, AnimalItemModel>(request, _context.Database.GetDbConnection(), string.Empty);
             var resp = await gen.GenerateSelectAndCount(generationWhere:true);
             return new AnimalResponseModel
             {

@@ -82,7 +82,7 @@ namespace Service.Helper
         //Generate Select and TotalCountQuery
         public async Task<(IEnumerable<TResponse>, int)> GenerateSelectAndCount(bool generationWhere = false)
         {
-            var command = _commandText + GenerateJoin()+ (generationWhere ? GenerateSelectWhere() : string.Empty);
+            var command = (string.IsNullOrEmpty(_commandText)? GenerationSelect():_commandText) + GenerateJoin()+ (generationWhere ? GenerateSelectWhere() : string.Empty);
             var cmd = new CommandDefinition(command + GenerationPagging(), _dataModel, commandType: CommandType.Text);
             var dataResult = await _connection.QueryAsync<TResponse>(cmd);
             var totalCount = await _connection.ExecuteScalarAsync<int>(command);
@@ -125,6 +125,8 @@ namespace Service.Helper
                         var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
                         tableName= "_"+attValue.PropertyName.ToLower();
                     }
+                    else
+                        tableName = $@"""{typeof(TDbModel).Name + "s"}""";
                     if ((item.PropertyType == typeof(int?) || item.PropertyType == typeof(int)))
                         where.Append($@" AND {tableName}.""" + item.Name + @$"""={value}");
                     else if (item.PropertyType == typeof(string))
@@ -155,6 +157,27 @@ namespace Service.Helper
                     join.Append($@"{attValue.JoinType} JOIN ""{ attValue.TableName}"" AS _{attValue.PropertyName.ToLower()} ON _{attValue.PropertyName.ToLower()}.""{ attValue.TargetPropertyName}""=""{typeof(TDbModel).Name + "s"}"".""{attValue.PropertyName}""");
             }
             return join.ToString();
+        }
+        string GenerationSelect()
+        {
+            var select = new StringBuilder();
+            select.Append("SELECT ");
+            var tableName = $@"""{typeof(TDbModel).Name + "s"}""";
+            var selectItems = typeof(TResponse).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute)) && !Attribute.IsDefined(s, typeof(NotWhereAttribute)));
+            var lastItemName = selectItems.Last()?.Name;
+            foreach (var item in selectItems)
+            {
+                if (Attribute.IsDefined(item, typeof(JoinTableAttribute)))
+                {
+                    var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
+                    tableName = "_" + attValue.PropertyName.ToLower();
+                }
+                else
+                    tableName = $@"""{typeof(TDbModel).Name + "s"}""";
+                select.Append($@" {tableName}.""" + item.Name+@""" "+ (lastItemName.Equals(item.Name)?string.Empty:","));
+            }
+            select.Append($@"From ""{typeof(TDbModel).Name + "s"}""");
+            return select.ToString();
         }
         #endregion
     }

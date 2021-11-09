@@ -19,7 +19,7 @@ namespace ServiceModels.Models.Animal
     {
         public string Name { get; set; }
 
-        [JoinTableAttribute(JoinType ="LEFT",PropertyName ="UserId",TableName ="Users", TargetPropertyName = "Id")]
+        //[JoinTableAttribute(JoinType ="LEFT",PropertyName ="UserId",TableName ="Users", TargetPropertyName = "Id")]
         public string Test { get; set; }
     }
 }
