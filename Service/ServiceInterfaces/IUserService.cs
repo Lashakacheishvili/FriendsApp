@@ -11,5 +11,6 @@ namespace Service.ServiceInterfaces
         Task<BaseResponseModel> UpdateUser(UserItemModel model);
         Task<BaseResponseModel> DeleteUser(int userId);
         Task<BaseResponseModel> AddFriend(AddFriendRequestModel request);
+        Task<UserAnimalsListResponse> GetUserAnimals(UserAnimalsListRequest request);
     }
 }

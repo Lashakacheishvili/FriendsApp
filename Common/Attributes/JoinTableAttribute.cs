@@ -15,5 +15,6 @@ namespace Common.Attributes
         public string PropertyName { get; set; }
         public string TargetPropertyName { get; set; }
         public string JoinType { get; set; }
+        public string ColumnName { get; set; }
     }
 }

@@ -18,6 +18,12 @@
             <param name="request"></param>
             <returns></returns>
         </member>
+        <member name="M:FriendsApi.Controllers.UserController.GetUserAnimals">
+            <summary>
+            User Animals List
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:FriendsApi.Controllers.UserController.AddUser(FriendsApi.Models.CreateUserApiModel)">
             <summary>
             Insert User

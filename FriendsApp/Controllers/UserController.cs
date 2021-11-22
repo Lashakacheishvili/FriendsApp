@@ -34,6 +34,16 @@ namespace FriendsApi.Controllers
             request.Id = (request.Id.HasValue ? request.Id : UserId);
             return await _userService.GetUser(request);
         }
+        /// <summary>
+        /// User Animals List
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("user-animals")]
+        [Authorize(Policy = "FriendsApi")]
+        public async Task<UserAnimalsListResponse> GetUserAnimals()
+        {
+            return await _userService.GetUserAnimals(new UserAnimalsListRequest { UserId=UserId.GetValueOrDefault()});
+        }
         #endregion
         #region Posts Method
         /// <summary>

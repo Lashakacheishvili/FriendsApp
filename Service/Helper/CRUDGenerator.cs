@@ -80,13 +80,23 @@ namespace Service.Helper
             };
         }
         //Generate Select and TotalCountQuery
-        public async Task<(IEnumerable<TResponse>, int)> GenerateSelectAndCount(bool generationWhere = false)
+        public async Task<BaseListingResponse<TResponse>> GenerateSelectAndCount(bool generationWhere = false)
         {
-            var command = (string.IsNullOrEmpty(_commandText)? GenerationSelect():_commandText) + GenerateJoin()+ (generationWhere ? GenerateSelectWhere() : string.Empty);
+            var resp = new BaseListingResponse<TResponse>
+            {
+                List = new List<TResponse>(),
+                TotalCount = 0,
+            };
+            var dynamicText=string.Empty;
+            if (string.IsNullOrEmpty(_commandText))
+                dynamicText = GenerateJoin() + (generationWhere ? GenerateSelectWhere() : string.Empty);
+            var command = (string.IsNullOrEmpty(_commandText) ? GenerationSelect() : _commandText) + dynamicText;
+            var commandCount = (string.IsNullOrEmpty(_commandText) ? GenerationCount() : _commandText) + dynamicText;
             var cmd = new CommandDefinition(command + GenerationPagging(), _dataModel, commandType: CommandType.Text);
-            var dataResult = await _connection.QueryAsync<TResponse>(cmd);
-            var totalCount = await _connection.ExecuteScalarAsync<int>(command);
-            return (dataResult, totalCount);
+            var count = new CommandDefinition(commandCount, _dataModel, commandType: CommandType.Text);
+            resp.List = await _connection.QueryAsync<TResponse>(cmd);
+            resp.TotalCount = await _connection.ExecuteScalarAsync<int>(count);
+            return resp;
         }
         #region Private Method
         string GenerationPagging()
@@ -114,16 +124,16 @@ namespace Service.Helper
         {
             var where = new StringBuilder();
             where.Append(" Where TRUE ");
-            var tableName=$@"""{typeof(TDbModel).Name + "s"}""";
-            foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute)) && !Attribute.IsDefined(s,typeof(NotWhereAttribute))))
+            var tableName = $@"""{typeof(TDbModel).Name + "s"}""";
+            foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute)) && !Attribute.IsDefined(s, typeof(NotWhereAttribute))))
             {
                 var value = item.GetValue(_dataModel, null);
                 if (value != null && value.ToString() != "0")
                 {
-                    if(Attribute.IsDefined(item, typeof(JoinTableAttribute)))
+                    if (Attribute.IsDefined(item, typeof(JoinTableAttribute)))
                     {
                         var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
-                        tableName= "_"+attValue.PropertyName.ToLower();
+                        tableName = "_" + attValue.PropertyName.ToLower();
                     }
                     else
                         tableName = $@"""{typeof(TDbModel).Name + "s"}""";
@@ -150,11 +160,17 @@ namespace Service.Helper
         string GenerateJoin()
         {
             var join = new StringBuilder();
-            foreach (var item in typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))
-             && Attribute.IsDefined(s, typeof(JoinTableAttribute))))
+            var joinList = typeof(TResponse).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))
+               && Attribute.IsDefined(s, typeof(JoinTableAttribute))).ToList();
+            joinList.AddRange(typeof(TInserData).GetProperties().Where(s => !Attribute.IsDefined(s, typeof(NotMappedAttribute))
+               && Attribute.IsDefined(s, typeof(JoinTableAttribute))).ToList());
+            foreach (var item in joinList)
             {
+
                 var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
-                    join.Append($@"{attValue.JoinType} JOIN ""{ attValue.TableName}"" AS _{attValue.PropertyName.ToLower()} ON _{attValue.PropertyName.ToLower()}.""{ attValue.TargetPropertyName}""=""{typeof(TDbModel).Name + "s"}"".""{attValue.PropertyName}""");
+                if (join.ToString().Contains("_" + attValue.PropertyName.ToLower()))
+                    continue;
+                join.Append($@" {attValue.JoinType} JOIN ""{ attValue.TableName}"" AS _{attValue.PropertyName.ToLower()} ON _{attValue.PropertyName.ToLower()}.""{ attValue.TargetPropertyName}""=""{typeof(TDbModel).Name + "s"}"".""{attValue.PropertyName}""");
             }
             return join.ToString();
         }
@@ -170,14 +186,21 @@ namespace Service.Helper
                 if (Attribute.IsDefined(item, typeof(JoinTableAttribute)))
                 {
                     var attValue = item.GetCustomAttributes(typeof(JoinTableAttribute), true).Cast<JoinTableAttribute>().Single();
-                    tableName = "_" + attValue.PropertyName.ToLower();
+                    tableName = "_" + attValue.PropertyName.ToLower() + $@".""{attValue.ColumnName}""  {item.Name} ";
                 }
                 else
-                    tableName = $@"""{typeof(TDbModel).Name + "s"}""";
-                select.Append($@" {tableName}.""" + item.Name+@""" "+ (lastItemName.Equals(item.Name)?string.Empty:","));
+                    tableName = $@"""{typeof(TDbModel).Name + "s"}"".""{item.Name}"" ";
+                select.Append(tableName + (lastItemName.Equals(item.Name) ? string.Empty : ","));
             }
             select.Append($@"From ""{typeof(TDbModel).Name + "s"}""");
             return select.ToString();
+        }
+        string GenerationCount()
+        {
+            var count = new StringBuilder();
+            count.Append("SELECT COUNT(*) as totalPrice ");
+            count.Append($@"From ""{typeof(TDbModel).Name + "s"}""");
+            return count.ToString();
         }
         #endregion
     }
