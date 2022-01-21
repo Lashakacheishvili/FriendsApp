@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30309.148
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendsApi", "FriendsApp\FriendsApi.csproj", "{5BA6E162-7510-405D-9BAD-91000913FD7E}"
 EndProject
@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTest", "ApiTest\ApiTest.csproj", "{195AB81E-94B3-4BAE-9A86-01AFE5E910F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{0E8D0267-142E-41D2-9AFD-3BD782476BA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E8D0267-142E-41D2-9AFD-3BD782476BA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E8D0267-142E-41D2-9AFD-3BD782476BA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{195AB81E-94B3-4BAE-9A86-01AFE5E910F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{195AB81E-94B3-4BAE-9A86-01AFE5E910F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{195AB81E-94B3-4BAE-9A86-01AFE5E910F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{195AB81E-94B3-4BAE-9A86-01AFE5E910F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

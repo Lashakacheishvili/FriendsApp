@@ -34,7 +34,7 @@ namespace FriendsApp
             #region Swagger Docs
             services.AddSwaggerDocumentation(apiHost);
             #endregion
-            services.AddJobariaService();
+            services.AddService();
             services.AddConfigure();
         }
 
