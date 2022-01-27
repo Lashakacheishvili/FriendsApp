@@ -21,7 +21,7 @@ namespace Service.ServiceImplementations
         public async Task<UserItemModel> GetUser(UserRequestModel request)
         {
             var gen = new CRUDGenerator<UserRequestModel, Domain.Models.User, UserItemModel>(request, _context.Database.GetDbConnection());
-            var resp = await gen.GenerateSelectAndCount();
+            var resp = await gen.GenerateSelectAndCount(generationWhere:true);
             return resp.List?.FirstOrDefault();
         }
         public async Task<UserAnimalsListResponse> GetUserAnimals(UserAnimalsListRequest request)
