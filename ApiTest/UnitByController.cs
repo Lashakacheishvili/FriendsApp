@@ -30,7 +30,7 @@ namespace ApiTest
             var dasdad = await ct.GetUser(new ServiceModels.Models.User.UserRequestModel { Id = 1 });
             if (dasdad != null )
                 Console.WriteLine(dasdad.UserName);
-            Console.WriteLine("End Test");
+            Console.WriteLine("End Test"); 
         }
     }
 }

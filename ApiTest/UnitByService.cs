@@ -16,7 +16,7 @@ namespace ApiTest
     {
         private readonly IAnimalService _animalService;
         #region Congiguration Injection
-       // IConfiguration configuration=new ConfigurationBuilder().Build(); 
+        // IConfiguration configuration=new ConfigurationBuilder().Build(); 
         #endregion
         public UnitByService()
         {
@@ -29,10 +29,36 @@ namespace ApiTest
         [TestMethod]
         public async Task TestMethod1()
         {
+            #region Request TestCase
+            var requests = new List<ServiceModels.Models.Animal.AnimalRequestModel>
+            {
+                new ServiceModels.Models.Animal.AnimalRequestModel{},
+                new ServiceModels.Models.Animal.AnimalRequestModel
+                {
+                     Name ="1"
+                },
+                new ServiceModels.Models.Animal.AnimalRequestModel
+                {
+                     Name="a"
+                }
+            };
+            #endregion
+            CollectionAssert.AllItemsAreNotNull(requests);
+            var response = new List<ServiceModels.Models.Animal.AnimalResponseModel>();
             Console.WriteLine("Start Test");
-            var dasdad = await _animalService.GetAnimals(new ServiceModels.Models.Animal.AnimalRequestModel {});
-            if (dasdad != null && dasdad.TotalCount > 0)
-                Console.WriteLine(string.Join(",", dasdad.Animals.Select(s=>s.Name)));
+
+            foreach (var item in requests)
+            {
+                var resp = await _animalService.GetAnimals(item);
+                if (resp != null && resp.TotalCount > 0)
+                {
+                    Console.WriteLine(string.Join(",", resp.Animals.Select(s => s.Name)));
+                    response.Add(resp);
+                }
+
+            }
+            CollectionAssert.AllItemsAreNotNull(response);
+            Console.WriteLine(response.Count.ToString());
             Console.WriteLine("End Test");
         }
     }
