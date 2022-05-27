@@ -24,10 +24,7 @@ namespace FriendsApi.Controllers
         /// <returns></returns>
         [HttpGet("animals")]
         [AllowAnonymous]
-        public async Task<AnimalResponseModel> GetAnimals([FromQuery] AnimalRequestModel request)
-        {
-            return await _animalService.GetAnimals(request);
-        }
+        public async Task<AnimalResponseModel> GetAnimals([FromQuery] AnimalRequestModel request)=>await _animalService.GetAnimals(request);
         #endregion
     }
 }
